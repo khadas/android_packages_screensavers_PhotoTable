@@ -42,10 +42,17 @@ public class FlipperDreamSettings extends ListActivity {
     private SectionedAlbumDataAdapter mAdapter;
     private MenuItem mSelectAll;
     private AsyncTask<Void, Void, Void> mLoadingTask;
+    private boolean mPermissionErr;
 
     @Override
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
+
+        if (mPermissionErr = CheckPermissionActivity.jump2PermissionActivity(this, this instanceof PhotoTableDreamSettings)) {
+            finish();
+            return;
+        }
+
         mSettings = getSharedPreferences(PREFS_NAME, 0);
         init();
     }
@@ -57,6 +64,9 @@ public class FlipperDreamSettings extends ListActivity {
     }
 
     protected void init() {
+        if(mPermissionErr){
+            return;
+        }
         mPhotoSource = new PhotoSourcePlexor(this, mSettings);
         setContentView(R.layout.settingslist);
         if (mLoadingTask != null && mLoadingTask.getStatus() != Status.FINISHED) {
