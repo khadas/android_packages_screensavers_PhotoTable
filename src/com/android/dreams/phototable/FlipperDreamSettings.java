@@ -15,8 +15,10 @@
  */
 package com.android.dreams.phototable;
 
+import android.Manifest;
 import android.app.ListActivity;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.database.DataSetObserver;
 import android.os.AsyncTask;
 import android.os.AsyncTask.Status;
@@ -25,6 +27,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Toast;
 
 import java.util.LinkedList;
 
@@ -43,17 +46,38 @@ public class FlipperDreamSettings extends ListActivity {
     private MenuItem mSelectAll;
     private AsyncTask<Void, Void, Void> mLoadingTask;
 
+    private static final int PERMISSION_REQUEST_CODE = 1;
+
     @Override
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
         mSettings = getSharedPreferences(PREFS_NAME, 0);
-        init();
+        int checkPermission = checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE);
+        if (checkPermission != PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, PERMISSION_REQUEST_CODE);
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        if (PERMISSION_REQUEST_CODE == requestCode) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                //init();//will do onresume, not need init again
+            } else {
+                String toast_text = getResources().getString(R.string.err_permission);
+                Toast.makeText(this, toast_text, Toast.LENGTH_SHORT).show();
+                finish();
+            }
+        }
     }
 
     @Override
     protected void onResume(){
         super.onResume();
-        init();
+        int checkPermission = checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE);
+        if (checkPermission == PackageManager.PERMISSION_GRANTED) {
+            init();
+        }
     }
 
     protected void init() {

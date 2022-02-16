@@ -99,7 +99,9 @@ public class LocalSource extends CursorPhotoSource {
 
                         if (nameIndex >= 0) {
                             data.title = cursor.getString(nameIndex);
-                        } else {
+                        }
+
+                        if (null == data.title) {
                             data.title = mUnknownAlbumName;
                         }
 

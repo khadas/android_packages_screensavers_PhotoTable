@@ -298,7 +298,7 @@ public abstract class PhotoSource {
             int longSide, int shortSide) {
         Bitmap image = null;
         ImageData data = mImageMap.get(current);
-        if (current != null) {
+        if (current != null && data != null) {
           ImageData prev = data.naturalPrevious();
           if (prev != null) {
             image = load(prev, options, longSide, shortSide);
